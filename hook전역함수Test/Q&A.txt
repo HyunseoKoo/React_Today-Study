@@ -1,0 +1,147 @@
+
+
+1. FLUX 패턴에 대하여 설명해보세요
+
+
+   action이라는 특정 객체를 dispatcher가 store(전역으로 사용할 수 있는 비즈니스 로직이나 state가 있는 곳)에 전달
+
+   action(특정 객체) -> [dispatcher](전달자 역할) -> store(비즈니스 로직/state 있는곳) 
+                        ------------
+                        dispatcher를 통해 어디에서든 action을 store로 보낼 수 있음
+
+   단방향으로 데이터가 흐르는 패턴으로(?) 데이터 추적이 용이하다.
+
+
+2. 아래의 hook 함수는 각각 어느 순간에 사용할까요
+
+    (1) useReducer
+        : userReducer는 비즈니스 로직(상태 업데이트 로직)을 컴포넌트에서 분리하여 외부 파일에 작성하고, 다른 파일 "어디에서든" action만 실행하면 state를 관리할 수 있으므로
+          재사용성/가독성을 높이고 유지보수를 편리하게 하고 싶을 때 사용한다.
+          [특정 state가 바깥에 있기 때문에, 로직을 변경하기 위해서 이 파일 저 파일 돌아다닐 필요가 없게 되어 편리하다]
+
+        *****사용법*****
+        1) reducer store파일에 따로 떼내어 관리하고 싶은 비즈니스 로직을 작성한다.
+           =>  export const countReducer = (state, action) => {
+                switch (action.type) {
+                  case 'INCREMENT':
+                    return state + action.count;
+                  case 'DECREMENT':
+                    return state - action.count;
+                  default:
+                    return state;
+                }
+              };
+
+        2) 컴포넌트를 사용할 파일에서 useReducer 함수를 선언한다.
+           => const [count, dispatch] = useReducer(countReducer, 0);
+
+        3) 사용할 비즈니스 로직의 action(객체)를 작성한다.
+           => const onIncrementCount = () => {    
+                dispatch({                  // 이때의 dispatch는 위에서 선언한 useReducer함수의 dispatch 배열요소로, 이 dispatch가 객체로 들어있는 action을 countReducer로 전달하는 역할을 함.
+                  type: 'INCREMENT',
+                  count: 3,
+                });
+              };
+
+
+    (2) useContext
+        : state를 전역으로 사용할 수 있게 만드는 것. state를 전역으로 써야하는 이유? state를 props로 전달하는 depth가 깊어질수록 데이터 추적이 어려워져서
+        전역으로 관리하기 위함. 
+        reducer는 비즈니스 로직을 전역화 한거라면, context는 state를 전역화 한 것!
+
+
+        *****사용법*****
+        1) context store 파일에 비어 있는 전역 저장소를 만들어 준다. 
+             => export cons UserContext = createContext();  [여기에 담긴 value는 다른 컴포넌트 어디에서든 쓸 수 있다]
+
+        2) 해당 파일에 provider함수(ex. ContextProvider)를 만들어주고 return 부분에 provider 덮개를 만들어 주고, value값을 채워넣어준다. 
+             => <UserContext.Provider value={state}}>{children}</UserContext.Provider>
+        
+        3) 모든 컴포넌트들이 만나는 App.js에 context 파일에서 export한 provider변수(ContextProvider)로 감싸주어 모든 하위 컴포넌트들이 children이 되도록하여
+           context파일 return부분에 세팅한 value(state)가 (전역으로) 전달될 수 있도록 한다.
+
+        3) state를 관리할 컴포넌트 파일에서 useContext를 사용한다.
+             => const useUserState = useContext(UserContext) 를 컴포넌트 파일에서 작성할 수 있지만, 일일이 useContext(UserContext)를 치기 번거로우니까
+           아래와 같이 context 파일에서 변수로 지정하여 export하여 필요할 때마다 컴포넌트에 useUserState 변수로 사용할 수 있다.
+             => export const useUserState = () => useContext(UserContext)
+           컴포넌트 파일에서 아래와 같이 사용한다.
+             => const userList = useUserState();  // useContext(UserContext)를 변수화 한것.
+
+    => context는 전역으로 state를 관리해주기 위한거고, reducer는 그 state의 비즈니스 로직을 밖으로 빼내기 위함!!     
+
+
+
+
+3. 전역 상태 관리를 해야하는 이유는 무엇일까요
+
+    : 특정 state를 어디서나 편하게 쓰기 위함이다. reducer를 이용하여 전역 state를 관리하는 로직을 또 따로 뺄수 있으니까 context와 reducer를 함께 쓰면 편리하다.
+      그래서, reducer와 context를 함께 쓴다.
+          
+          => const ContextProvider = ({children}) => {
+            const [state, dispatch] = useReducer(userListReducer, null);    // useReducer로 context에 state(데이터)와 dispatch(state를 관리할 비즈니스 로직)를 전역에 전달한다!
+
+            return (
+              <UserContext.Provider value={state}>
+                <UserDisPatchContext.Provider value={dispatch}>{children}</UserDisPatchContext.Provider>
+              </UserContext.Provider>
+            );
+          };
+
+          export default ContextProvider;
+
+
+
+
+4. 그렇다면 전역 상태 관리는 위 조건에만 부합하면 반드시 수행하는 것이 좋을까요?
+   전역 상태 관리를 통해 얻을 수 있는 장단점에 관하여 토의해보세요
+
+
+
+==============================================================================================================================
+
++) redux
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
