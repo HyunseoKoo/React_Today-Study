@@ -5,7 +5,8 @@ import TodoList from './components/List/TodoList';
 import TodoFormModal from './components/Modal/TodoForm';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import TodoApi from 'apis/todoApi';
 
 export const print = () => {
   console.log('반갑습니다');
@@ -14,35 +15,34 @@ export const print = () => {
 function TodoPage() {
   // state
   const [isOpenAddTodoModal, setIsOpenAddTodoModal] = useState(false);
-  const todoList = [];
+  const [todoList, setTodoList] = useState([]);
+
+  useEffect(() => {
+    const getTodoList = async () => {
+      const res = await TodoApi.getTodo();
+      // console.log(res);
+      setTodoList(res.data.data);
+    };
+    getTodoList();
+  }, []);
 
   // toast
-  const handleAddTodo = (title, content) =>
-    new Promise((resolve, reject) => {
-      if (!title || !content) {
-        return reject('need fullfilled');
-      }
+  const handleAddTodo = (title, content) => {
+    if (!title | !content) {
+      return alert('빈칸을 채워주세요');
+    }
 
-      setTimeout(() => {
-        const newTodo = {
-          id: Math.floor(Math.random() * 100000),
-          state: false,
-          title,
-          content,
-        };
-        resolve(newTodo);
-      }, 1000);
-    }).then((res) => {
-      // const newTodoList = [...todoList].push(res)
-
-      /*
-      dispatch({
-        type: "ADD_TODO",
-        payload: res
+    return TodoApi.addTodo({ title, content })
+      .then((res) => {
+        if (res.status === 200) {
+          setTodoList([res.data.data, ...todoList]);
+        }
+        setIsOpenAddTodoModal(false);
       })
-      */
-      setIsOpenAddTodoModal(false);
-    });
+      .catch((err) => {
+        throw new Error(err);
+      });
+  };
 
   const showAddTodoToastMessage = (title, content) => {
     toast.promise(handleAddTodo(title, content), {
