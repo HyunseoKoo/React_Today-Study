@@ -19,17 +19,12 @@ function LoginForm() {
     // 백엔드 API 관심사분리 하기 전 코드
     //   try {
     //     /* env는 수정 후 서버를 종료 후 다시 빌드 해야함함 */
-    //     const { data } = await axios.post(process.env.REACT_APP_BACKEND_URL + '/user/login', {
-    //       email,
-    //       password,
-    //     });
-    //     // {data: {…}, status: 200, statusText: 'OK', headers: AxiosHeaders, config: {…}, …}  => 비동기 통신으로 백엔드에서 받아온 데이터
-    //     // 위에서 비구조분해할당한 {data} => {message: true, data: {token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjEsI…IyOH0.uNfeAYRqXXEyAShpIQyPN2NdxuvNgqgNKGs3q5SLaL4'}}
-
-    //     localStorage.setItem('access_token', data.data.token); // 로컬스토리지에 토큰을 저장한 것
+    //     const { data } = await axios.post(process.env.REACT_APP_BACKEND_URL + '/user/login', {email,password,});
+    //     {data: {…}, status: 200, statusText: 'OK', headers: AxiosHeaders, config: {…}, …}  => 비동기 통신으로 백엔드에서 받아온 데이터
+    //     위에서 비구조분해할당한 {data} => {message: true, data: {token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9~}}
+    //     localStorage.setItem('access_token', data.data.token); // 로컬스토리지에 토큰을 저장
     //     if (localStorage.getItem('access_token')) {
-    //       // 비동기가 아님. 로컬스토리지에 access_token이 있다면 navigate 실행
-    //       navigate('/todo');
+    //       navigate('/todo'); // 비동기가 아님. 로컬스토리지에 access_token이 있다면(=로그인이 되었다면) navigate 실행
     //     }
     //   } catch (err) {
     //     console.error(err);
