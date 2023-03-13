@@ -27,3 +27,9 @@ Intersection Observer 사용이유? 타겟 요소가 화면에 노출되었는�
 * 사용자가 로그인을 하면 백엔드가 access_token을 줌. 프론트엔드에서 로그인 유무를 구별 해야 할 때마다 이 access_token을 전달하여 백엔드가 사용자의 고유 정보를 확인하게 함.
 * jwt : 가장 잘 쓰이는 access_token 방식
 * access_token도 노출될 위험이 있어 30분에 한번씩 재발급됨. (refresh_token : 1~2주 유지)
+##
+[23.03.12]
+MSW (Mocking Service Worker) 개념 공부.
+MSW: 백엔드가 없어도 프론트 내에서 http 요청을 통한 데이터 교환을 할수 있게 한다.
+개발/테스트의 효율성을 높이고 코드의 안정성과 견고성을 높이기 위해 사용한다.
+mocking api로 백엔드 통신하는 앱 구현해볼 예정 (todoList 형태)
