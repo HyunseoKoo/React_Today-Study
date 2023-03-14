@@ -15,6 +15,7 @@ function SignUpForm({ setForm }) {
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) return alert('정보를 입력해주세요');
     if (password !== passwordConfirm) return alert('비밀번호 확인이 일치하지 않습니다');
 

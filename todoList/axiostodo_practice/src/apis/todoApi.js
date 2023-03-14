@@ -22,7 +22,7 @@ const TodoApi = {
 export default TodoApi;
 
 /*
-todo 페이지 제작하기 위한 api 정리 [설계]
+todo 페이지 제작하기 위한 api 정리
 
 1. axios.get("/todo") // return 값 ---> todolist
    axios.post("/todo", {content, title}) ---> return값: {todo}

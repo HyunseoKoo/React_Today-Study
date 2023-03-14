@@ -4,6 +4,7 @@ import Button from 'components/Button/Button';
 import useInputs from 'hooks/useInputs';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TokenService from 'repository/TokenService';
 import * as S from '../style';
 
 function LoginForm() {
@@ -31,9 +32,11 @@ function LoginForm() {
     //     alert('아이디와 비밀번호를 확인해주세요');
     //   }
     try {
-      const res = await AuthApi.login(email, password);
-      console.log(res);
-      navigate('/todo');
+      const { data: response } = await AuthApi.login(email, password);
+      TokenService.setToken(response.token);
+      if (TokenService.getToken()) {
+        navigate('/todo');
+      }
     } catch (err) {
       console.error(err);
       alert('아이디와 비밀번호를 확인해주세요');
