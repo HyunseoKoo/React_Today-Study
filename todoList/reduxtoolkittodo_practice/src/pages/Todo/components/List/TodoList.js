@@ -1,26 +1,27 @@
-import TodoApi from 'apis/todoApi';
+import { useDispatch } from 'react-redux';
+import { deleteTodo, updateTodo } from 'store/todo';
 import TodoCard from './Card/Card';
 
 function TodoList({ todoList, setTodoList }) {
-  const handleUpdateTodo = async (id, content, state) => {
-    const { data } = await TodoApi.updateTodo(id, { content, state });
-    const newTodoList = [...todoList];
-    const index = newTodoList.findIndex((todo) => todo.id === data.data.id);
-    newTodoList[index] = data.data;
-    setTodoList(newTodoList);
+  const dispatch = useDispatch();
+
+  const handleUpdateTodo = (id, content, state) => {
+    dispatch(updateTodo({ id, content, state }));
   };
 
-  const onDeleteTodo = async (id) => {
+  const onDeleteTodo = (id) => {
     if (window.confirm('정말 삭제하시겠습니까')) {
-      const { data } = await TodoApi.deleteTodo(id);
-      setTodoList(todoList.filter((todo) => todo.id !== data.data));
+      dispatch(deleteTodo(id));
     }
   };
+
+  console.log(todoList);
 
   return (
     <div>
       {/* {TODO_LIST.map((todo) => <TodoCard />)} */}
       {todoList.map((todo) => {
+        console.log(todo);
         return (
           <TodoCard
             key={todo.id}

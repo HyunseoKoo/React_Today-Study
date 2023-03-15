@@ -3,7 +3,11 @@
 // 모듈화 고려 부분? 왜 모듈화하는지 이유와, 어떠한 컴포넌트/기능들이 재사용될 수 있는지 고려
 
 import axios from 'axios';
+import TokenService from 'repository/TokenService';
 
 export const Axios = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_URL,
+  headers: {
+    Authorization: `Bearer ${TokenService.getToken()}`,
+  }, // headers에 getToken을 해야 토큰을 조회할 수 있음(?)
 });

@@ -1,0 +1,38 @@
+
+redux-middleware
+
+    redux는 동기적인 작업을 처리하는 것
+    그러나 실제 개발을 할 때는 비동기 데이터 작업을 많이 다루게 됩니다!
+    따라서 dispatch가 특정한 값을 전달하면 middleware에서 비동기 작업 처리 후
+    결과값을 store에 전달
+
+    const res = await TodoService.getTodo()
+    dispatch({
+        type: 'GET-TODO",
+        payload: res.data.data
+    })
+
+    -----------------------------------> dispatch 이후에 실행해야하는 로직이 있다면?
+
+    dispatch({
+        type: "GET-TODO"
+    })
+
+    이렇게 dispatch로 GET-TODO 타입을 보내면 미들웨어가 그 중간에서 백엔드와 비동기적으로 통신하여 loading / success / error 처리.
+    loading / success / error 상황에 따른 처리를 전역 상태로 관리할 수 있음.
+    dispatch가 관리하는 데이터가 다른 여러 컴포넌트에서 사용할 경우 재사용할 여지가 있기 때문.
+
+    middleware는 dispatch로 데이터 요청만 해도 백엔드에서 받아오고, 전역상태 관리까지 해줄 수 있는 친구.
+
+    -----------------------------------> 대표적인 middleware? redux-saga, redux-thunk
+
+    그러나 redux-toolkit(RTK) 에서는 thunk를 기본으로 하고 있으며
+    기존 thunk보다 훨씬 더 간편하게 코드 구현이 가능하기에
+
+    saga의 사용 빈도가 급격히 줄어들고 있음
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+npm i msw immer redux-saga 
+    
+    * immer? state의 불변성을 쉽게 관리해주기 위해 사용하는 라이브러리
