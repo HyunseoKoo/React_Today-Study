@@ -1,28 +1,37 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { getIssues } from '../../../../reducer/issue';
-import Issue from './components/issue';
+import Issue from './issueCard/issue';
 
-function IssueList() {
-  const issueList = useSelector((state) => state.issue.issues);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getIssues());
-  }, []);
+function IssueList({ issueList, limit, setLimit }) {
+  console.log('issueList');
 
   return (
-    <S.Wrapper>
-      {issueList &&
-        issueList.map((issue) => {
-          return (
-            <Link to={`/issue/${issue.id}`}>
-              <Issue issues={issue} />
-            </Link>
-          );
-        })}
-    </S.Wrapper>
+    <>
+      <label>
+        페이지 당 표시할 게시물 수:&nbsp;
+        <select
+          type="number"
+          value={limit}
+          onChange={({ target: { value } }) => setLimit(Number(value))}
+        >
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </label>
+      <S.Wrapper>
+        {issueList &&
+          issueList.map((issue) => {
+            return (
+              <S.Card>
+                <S.StyledLink to={`/issue/${issue.id}`}>
+                  <Issue issues={issue} />
+                </S.StyledLink>
+              </S.Card>
+            );
+          })}
+      </S.Wrapper>
+    </>
   );
 }
 
@@ -39,6 +48,17 @@ const Wrapper = styled.div`
   margin: 0 auto;
 `;
 
+const Card = styled.div`
+  margin: 30px;
+`;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: black;
+`;
+
 const S = {
   Wrapper,
+  Card,
+  StyledLink,
 };

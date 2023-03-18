@@ -1,15 +1,8 @@
 import axios from 'axios';
 
-const per_page = 10;
-const page = 20;
-
 export const Axios = axios.create({
-  baseURL: process.env.REACT_APP_BASE_URL,
+  baseURL: process.env.REACT_APP_BASE_URL, // .env.local 파일로 숨기기 안됨.
   headers: {
-    Authorization: process.env.AUTH_TOKEN,
-  },
-  params: {
-    per_page,
-    page,
+    Authorization: `bearer ${process.env.REACT_APP_AUTH_TOKEN}`,
   },
 });

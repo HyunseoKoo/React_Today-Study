@@ -1,10 +1,17 @@
 import styled from 'styled-components';
 
-function Issue() {
+function Issue({ issues }) {
+  const { number, comments, title, created_at, body } = issues;
   return (
     <>
       <S.Wrapper>
-        <div></div>
+        <div>
+          <div>{number}</div>
+          <div>{title}</div>
+          <div>{comments}</div>
+        </div>
+        <div>{body}</div>
+        <div>{created_at}</div>
       </S.Wrapper>
     </>
   );
@@ -13,10 +20,9 @@ function Issue() {
 export default Issue;
 
 const Wrapper = styled.div`
-  border: 1px solid red;
+  border: 1px solid gray;
   width: 650px;
   height: 350px;
-  margin: 30px;
   padding: 2rem;
   font-size: 1.5rem;
   overflow: hidden;

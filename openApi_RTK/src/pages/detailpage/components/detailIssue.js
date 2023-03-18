@@ -4,16 +4,20 @@ import styled from 'styled-components';
 import { useEffect } from 'react';
 import { getIssues } from '../../../reducer/issue';
 
-function DetailIssue(issues) {
-  const { key } = useParams();
+function DetailIssue() {
   const issueList = useSelector((state) => state.issue.issues);
   const dispatch = useDispatch();
+
   useEffect(() => {
+    if (issueList.length !== 0) return;
     dispatch(getIssues());
   }, []);
 
-  const issue = issueList.find((item) => item.id === key);
-  console.log(issue);
+  const { key } = useParams();
+
+  const issue = issueList.find((item) => {
+    return item.id == key;
+  });
 
   return (
     <>
@@ -36,7 +40,6 @@ const Wrapper = styled.div`
   overflow: hidden;
   box-shadow: 0 2px 3px 2px gray;
   border-radius: 10px;
-  cursor: pointer;
 `;
 
 const S = {

@@ -10,7 +10,6 @@ const initialState = {
   },
 };
 
-// get만 하는데 여기서 createSlice를 사용할 이유가 있나?
 export const issueSlice = createSlice({
   name: 'issue',
   initialState,
@@ -21,6 +20,7 @@ export const issueSlice = createSlice({
 
     builder.addCase(getIssues.fulfilled, (state, action) => {
       state.issues = action.payload;
+      console.log('#############', action.payload);
       state.getIssueState.loading = false;
       state.getIssueState.done = true;
       state.getIssueState.err = null;
@@ -34,7 +34,7 @@ export const issueSlice = createSlice({
   },
 });
 
-export const getIssues = createAsyncThunk('issue/getIssues', async () => {
-  const res = await IssueApi.getIssue();
+export const getIssues = createAsyncThunk('issue/getIssues', async (issue) => {
+  const res = await IssueApi.getIssue(issue);
   return res.data;
 });
