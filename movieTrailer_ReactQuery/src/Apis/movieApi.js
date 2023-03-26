@@ -41,6 +41,10 @@ const MovieApi = {
 	getPopular() {
 		return Axios.get(MOVIE_PATH + '/popular');
 	},
+
+	getVideos(movieId) {
+		return Axios.get(MOVIE_PATH + `/${movieId}/videos`);
+	},
 };
 
 export default MovieApi;
