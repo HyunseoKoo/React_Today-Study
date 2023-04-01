@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useRef, useState} from 'react';
+import { useEffect, useState} from 'react';
 import styled from "styled-components";
 import useDebounce from '../debounce/debounce';
 
@@ -8,15 +8,17 @@ function Search() {
     const [text, setText] = useState(null)
     const [searchedWords, setSearchedWords] = useState()
     const [exactWord, setExactWord] = useState()
-    const localStorageArr = useRef([]) // 로컬스토리의 배열로 대체하기
-    const [historyArr, setHistoryArr] = useState([])
-    const savedWord = localStorage.getItem('history')
-
+    const [historyArr, setHistoryArr] = useState(JSON.parse(localStorage.getItem('history')))
     const debounceValue = useDebounce(text)
 
     const onChangeText = (e) => {
         setText(e.target.value)
     }
+
+    // 처음 마운트 됐을때 로컬스토리지에 localStorageArr이라는 [](배열)을 문자 형태로 저장. '[]'
+    useEffect(() => {
+        localStorage.setItem('history', JSON.stringify([]))
+    },[])
     
     // 관심사 분리 필요
     // const getData = async () => {
@@ -32,6 +34,7 @@ function Search() {
         if (debounceValue) getData()
     },[debounceValue])
 
+
     useEffect(()=> {
         if (!text) return setSearchedWords(null)
         // getData()
@@ -45,39 +48,27 @@ function Search() {
         ))
         setExactWord(output)
         if (!output) {
-            setExactWord('검색 결과가 없습니다')
+            setExactWord('검색 결과가 없습니다') // 백엔드 데이터로 보여주도록 err 처리하기 (후순위)
         }
-    }, [searchedWords]) //
+    }, [searchedWords])
 
 
     const onClickSearchBtn = () => {
         if(!searchedWords) return
-        const output = searchedWords.find((item) => (
-            item === text
-        ));
-        if(!output) return
-        localStorage.setItem('history', output)
-        const savedWord = localStorage.getItem('history') // 삭제 필요
-
-        if(!localStorageArr.current.includes(savedWord)){
-        localStorageArr.current.unshift(savedWord)
-        }
-        if(localStorageArr.current.includes(savedWord)) {
-            const notSame =localStorageArr.current.filter(item => item != savedWord)
-            notSame.unshift(savedWord)
-            const fiveWordsArr = notSame.slice(0, 5)
-            setHistoryArr(fiveWordsArr);
+        const savedStorageWord = JSON.parse(localStorage.getItem('history'))
+        savedStorageWord.unshift(text); // 문자->배열 형변환 후 text 저장.(현재 타입? 배열)
+        JSON.stringify(savedStorageWord) // 배열->문자 형변환
+        localStorage.setItem('history', JSON.stringify(savedStorageWord)) // 문자 형태로 변환한 값을 다시 로컬스토리지에 저장시켜줌
+        if(savedStorageWord.includes(text)) {
+            const notSame = savedStorageWord.filter(item => item != text)
+            console.log(notSame)
+            notSame.unshift(text)
+            console.log('2222', notSame)
+            const limitFive = notSame.slice(0, 5)
+            setHistoryArr(limitFive)
+            localStorage.setItem('history', JSON.stringify(notSame)) // 문자 형태로 변환한 값을 다시 로컬스토리지에 저장시켜줌
         }
     }
-
-    useEffect(() => {
-        if(localStorageArr.current.includes(savedWord)) {
-            const notSame =localStorageArr.current.filter(item => item != savedWord)
-            notSame.unshift(savedWord)
-            const fiveWordsArr = notSame.slice(0, 5)
-            setHistoryArr(fiveWordsArr)
-        }
-    },[localStorageArr.current.length])
 
     return (
         <>
@@ -93,7 +84,9 @@ function Search() {
                         <ul>
                             {item.includes(text) ? (
                                 <>
-                                    <Li style={{color: 'blue'}}>{item.split(" ")}</Li>
+                                    {item.split(text)[0]}
+                                    <span style={{color: 'blue'}}>{text}</span>
+                                    {item.split(text)[1]}
                                 </>
                             ) : (item)}
                         </ul>
@@ -105,7 +98,7 @@ function Search() {
             </S.Display2>
             <S.Display2>
                 <h2>최근 검색어: </h2>
-                {historyArr.map((item) => (
+                {historyArr && historyArr.map((item) => (
                     <S.Li>{item}</S.Li>
                 ))}
             </S.Display2>
