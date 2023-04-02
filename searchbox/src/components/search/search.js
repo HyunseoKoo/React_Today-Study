@@ -4,40 +4,69 @@ import styled from "styled-components";
 import useDebounce from '../debounce/debounce';
 
 function Search() {
-
     const [text, setText] = useState(null)
     const [searchedWords, setSearchedWords] = useState()
     const [exactWord, setExactWord] = useState()
-    const [historyArr, setHistoryArr] = useState(JSON.parse(localStorage.getItem('history')))
     const debounceValue = useDebounce(text)
+    const [historyArr, setHistoryArr] = useState(()=>{
+        if (typeof window !== "undefined") {
+            const saved = localStorage.getItem("history");
+            if (saved !== null) {
+                return JSON.parse(saved);
+            } else {
+                return [""]
+            }
+        }
+    })
+
+    // keypress 이벤트 변수
+    const [focusIndex, setFocusIndex] = useState(-1);
+    // const [hoverWord, setHoverWord] = useState(searchedWords[focusIndex])
+
+    useEffect(()=>{
+        console.log(focusIndex)
+        // searchedWords && focusIndex && console.log(hoverWord)
+    },[focusIndex])
+
+    const handleEnter = (e) => {
+        if (e.key === "Enter") {
+            const savedStorageWord = JSON.parse(localStorage.getItem('history'))
+        savedStorageWord.unshift(text);
+        JSON.stringify(savedStorageWord)
+        localStorage.setItem('history', JSON.stringify(savedStorageWord))
+        if(savedStorageWord.includes(text)) {
+            const notSame = savedStorageWord.filter(item => item != text)
+            notSame.unshift(text)
+            notSame.splice(5, notSame.length)
+            setHistoryArr(notSame)
+            localStorage.setItem('history', JSON.stringify(notSame))
+        }
+    }}
+    
+    useEffect(() => {
+        localStorage.setItem('history', JSON.stringify(historyArr))
+    },[])
 
     const onChangeText = (e) => {
         setText(e.target.value)
     }
-
-    // 처음 마운트 됐을때 로컬스토리지에 localStorageArr이라는 [](배열)을 문자 형태로 저장. '[]'
-    useEffect(() => {
-        localStorage.setItem('history', JSON.stringify([]))
-    },[])
     
     // 관심사 분리 필요
-    // const getData = async () => {
-    //     const searchedData = await axios.get(`http://localhost:4000/search?key=${text}`);
-    //     setSearchedWords(searchedData.data)
-    // }
-
     useEffect(()=>{
         const getData = async () => {
-            const searchedData = await axios.get(`http://localhost:4000/search?key=${debounceValue}`);
-            setSearchedWords(searchedData.data)
-        }
+            try {
+                const searchedData = await axios.get(`http://localhost:4000/search?key=${debounceValue}`);
+                setSearchedWords(searchedData.data)
+            } catch(err) {
+                    setExactWord(err.response.data)
+                    console.log(text)
+            }}
         if (debounceValue) getData()
     },[debounceValue])
 
 
     useEffect(()=> {
         if (!text) return setSearchedWords(null)
-        // getData()
     }, [text])
 
 
@@ -48,25 +77,22 @@ function Search() {
         ))
         setExactWord(output)
         if (!output) {
-            setExactWord('검색 결과가 없습니다') // 백엔드 데이터로 보여주도록 err 처리하기 (후순위)
+            setExactWord('일치하는 연관검색어가 없습니다')
         }
     }, [searchedWords])
 
 
     const onClickSearchBtn = () => {
-        if(!searchedWords) return
         const savedStorageWord = JSON.parse(localStorage.getItem('history'))
-        savedStorageWord.unshift(text); // 문자->배열 형변환 후 text 저장.(현재 타입? 배열)
-        JSON.stringify(savedStorageWord) // 배열->문자 형변환
-        localStorage.setItem('history', JSON.stringify(savedStorageWord)) // 문자 형태로 변환한 값을 다시 로컬스토리지에 저장시켜줌
+        savedStorageWord.unshift(text);
+        JSON.stringify(savedStorageWord)
+        localStorage.setItem('history', JSON.stringify(savedStorageWord))
         if(savedStorageWord.includes(text)) {
             const notSame = savedStorageWord.filter(item => item != text)
-            console.log(notSame)
             notSame.unshift(text)
-            console.log('2222', notSame)
-            const limitFive = notSame.slice(0, 5)
-            setHistoryArr(limitFive)
-            localStorage.setItem('history', JSON.stringify(notSame)) // 문자 형태로 변환한 값을 다시 로컬스토리지에 저장시켜줌
+            notSame.splice(5, notSame.length)
+            setHistoryArr(notSame)
+            localStorage.setItem('history', JSON.stringify(notSame))
         }
     }
 
@@ -74,7 +100,7 @@ function Search() {
         <>
             <S.Title>검색</S.Title>
             <S.Display>
-                <S.Searchbox placeholder={'검색어를 입력하세요.'} value={text} onChange={onChangeText}/>
+                <S.Searchbox placeholder={'검색어를 입력하세요.'} value={text} onChange={onChangeText} onKeyDown={handleEnter}/>
                 <S.Button onClick={onClickSearchBtn}>검색</S.Button>
             </S.Display>
             <S.Display>
@@ -83,11 +109,11 @@ function Search() {
                     {searchedWords && searchedWords.map((item) => (
                         <ul>
                             {item.includes(text) ? (
-                                <>
+                                <div>
                                     {item.split(text)[0]}
                                     <span style={{color: 'blue'}}>{text}</span>
                                     {item.split(text)[1]}
-                                </>
+                                </div>
                             ) : (item)}
                         </ul>
                     ))}
