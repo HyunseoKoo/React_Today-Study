@@ -3,48 +3,22 @@ import { useEffect, useState} from 'react';
 import styled from "styled-components";
 import useDebounce from '../debounce/debounce';
 
+let getHistory = JSON.parse(localStorage.getItem('history'))
+
 function Search() {
-    const [text, setText] = useState(null)
+    const [text, setText] = useState()
     const [searchedWords, setSearchedWords] = useState()
     const [exactWord, setExactWord] = useState()
     const debounceValue = useDebounce(text)
-    const [historyArr, setHistoryArr] = useState(()=>{
-        if (typeof window !== "undefined") {
-            const saved = localStorage.getItem("history");
-            if (saved !== null) {
-                return JSON.parse(saved);
-            } else {
-                return [""]
-            }
-        }
-    })
-
-    // keypress 이벤트 변수
-    const [focusIndex, setFocusIndex] = useState(-1);
-    // const [hoverWord, setHoverWord] = useState(searchedWords[focusIndex])
-
-    useEffect(()=>{
-        console.log(focusIndex)
-        // searchedWords && focusIndex && console.log(hoverWord)
-    },[focusIndex])
-
-    const handleEnter = (e) => {
-        if (e.key === "Enter") {
-            const savedStorageWord = JSON.parse(localStorage.getItem('history'))
-        savedStorageWord.unshift(text);
-        JSON.stringify(savedStorageWord)
-        localStorage.setItem('history', JSON.stringify(savedStorageWord))
-        if(savedStorageWord.includes(text)) {
-            const notSame = savedStorageWord.filter(item => item != text)
-            notSame.unshift(text)
-            notSame.splice(5, notSame.length)
-            setHistoryArr(notSame)
-            localStorage.setItem('history', JSON.stringify(notSame))
-        }
-    }}
+    const [historyArr, setHistoryArr] = useState()
+    const [focusIndex, setFocusIndex] = useState(-1)
     
-    useEffect(() => {
-        localStorage.setItem('history', JSON.stringify(historyArr))
+    useEffect(()=>{
+        if(!localStorage.getItem('history')) {
+            localStorage.setItem('history', JSON.stringify([]))
+        } else {
+            setHistoryArr(getHistory)
+        }
     },[])
 
     const onChangeText = (e) => {
@@ -53,15 +27,15 @@ function Search() {
     
     // 관심사 분리 필요
     useEffect(()=>{
+        if (!text) return
         const getData = async () => {
             try {
                 const searchedData = await axios.get(`http://localhost:4000/search?key=${debounceValue}`);
                 setSearchedWords(searchedData.data)
             } catch(err) {
                     setExactWord(err.response.data)
-                    console.log(text)
             }}
-        if (debounceValue) getData()
+        getData()
     },[debounceValue])
 
 
@@ -80,15 +54,14 @@ function Search() {
             setExactWord('일치하는 연관검색어가 없습니다')
         }
     }, [searchedWords])
-
-
+                                           
     const onClickSearchBtn = () => {
-        const savedStorageWord = JSON.parse(localStorage.getItem('history'))
-        savedStorageWord.unshift(text);
-        JSON.stringify(savedStorageWord)
-        localStorage.setItem('history', JSON.stringify(savedStorageWord))
-        if(savedStorageWord.includes(text)) {
-            const notSame = savedStorageWord.filter(item => item != text)
+        if(text.trim().length === 0) return;
+        getHistory.unshift(text)
+        const set = JSON.stringify(getHistory)
+        localStorage.setItem('history', set)
+        if(getHistory.includes(text)) {
+            const notSame = getHistory.filter(item => item !== text)
             notSame.unshift(text)
             notSame.splice(5, notSame.length)
             setHistoryArr(notSame)
@@ -96,26 +69,57 @@ function Search() {
         }
     }
 
+    // 키보드 이동
+    const keyHandle = (e) => {
+        if(e.key === "Enter") {
+            const savedStorageWord = JSON.parse(localStorage.getItem('history'))
+            getHistory.unshift(text);
+            const set = JSON.stringify(getHistory)
+            localStorage.setItem('history', set)
+        if(getHistory.includes(text)) {
+            const notSame = getHistory.filter(item => item !== text)
+            notSame.unshift(text)
+            notSame.splice(5, notSame.length)
+            setHistoryArr(notSame)
+            localStorage.setItem('history', JSON.stringify(notSame))
+            }
+        }
+
+        else if(e.key === "ArrowDown") {
+            if(focusIndex < searchedWords.length-1){
+                setFocusIndex(prev => prev+1)
+            }else {
+                setFocusIndex(0);
+            }
+        }
+
+        else if(e.key === "ArrowUp") {
+            if(focusIndex === 0) {
+                setFocusIndex(searchedWords.length-1)
+            } else {setFocusIndex(prev => prev-1)}
+            }
+        }
+
     return (
         <>
             <S.Title>검색</S.Title>
             <S.Display>
-                <S.Searchbox placeholder={'검색어를 입력하세요.'} value={text} onChange={onChangeText} onKeyDown={handleEnter}/>
+                <S.Searchbox placeholder={'검색어를 입력하세요.'} value={text} onChange={onChangeText} onKeyDown={keyHandle}/>
                 <S.Button onClick={onClickSearchBtn}>검색</S.Button>
             </S.Display>
             <S.Display>
                 <S.Display2>
                     <h2>연관검색어:</h2>
-                    {searchedWords && searchedWords.map((item) => (
-                        <ul>
+                    {searchedWords && searchedWords.map((item, idx) => (
+                        <S.List key={idx} focus={idx === focusIndex}>
                             {item.includes(text) ? (
                                 <div>
                                     {item.split(text)[0]}
-                                    <span style={{color: 'blue'}}>{text}</span>
+                                    <span value={text} style={{color: 'blue'}}>{text}</span>
                                     {item.split(text)[1]}
                                 </div>
                             ) : (item)}
-                        </ul>
+                        </S.List>
                     ))}
                 </S.Display2>
                 <S.Display2>
@@ -124,8 +128,8 @@ function Search() {
             </S.Display2>
             <S.Display2>
                 <h2>최근 검색어: </h2>
-                {historyArr && historyArr.map((item) => (
-                    <S.Li>{item}</S.Li>
+                {historyArr && historyArr.map((item, idx) => (
+                    <S.Li key={idx}>{item}</S.Li>
                 ))}
             </S.Display2>
             </S.Display>
@@ -172,6 +176,15 @@ const Button = styled.button`
 const Li = styled.li`
     list-style: none;
 `
+const Span = styled.div`
+    &:hover {
+    background-color: #edf5f5;
+    cursor: pointer;
+  }
+`
+const List = styled.div`
+    background-color: ${({ focus }) => (focus ? '#d9d9d9' : 'white')};
+`
 
 const S = {
     Title,
@@ -179,5 +192,7 @@ const S = {
     Display2,
     Searchbox,
     Button,
-    Li
+    Li,
+    Span,
+    List
 }
