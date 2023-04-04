@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState} from 'react';
 import styled from "styled-components";
+import SearchApi from '../../api/searchApi';
 import useDebounce from '../debounce/debounce';
 
 let getHistory = JSON.parse(localStorage.getItem('history'))
@@ -9,9 +10,9 @@ function Search() {
     const [text, setText] = useState()
     const [searchedWords, setSearchedWords] = useState()
     const [exactWord, setExactWord] = useState()
-    const debounceValue = useDebounce(text)
     const [historyArr, setHistoryArr] = useState()
     const [focusIndex, setFocusIndex] = useState(-1)
+    const debounceValue = useDebounce(text)
     
     useEffect(()=>{
         if(!localStorage.getItem('history')) {
@@ -30,13 +31,13 @@ function Search() {
         if (!text) return
         const getData = async () => {
             try {
-                const searchedData = await axios.get(`http://localhost:4000/search?key=${debounceValue}`);
+                const searchedData = await SearchApi.getSearchData(debounceValue)
                 setSearchedWords(searchedData.data)
             } catch(err) {
                     setExactWord(err.response.data)
             }}
         getData()
-    },[debounceValue])
+    }, [debounceValue])
 
 
     useEffect(()=> {
@@ -69,20 +70,18 @@ function Search() {
         }
     }
 
-    // 키보드 이동
     const keyHandle = (e) => {
         if(e.key === "Enter") {
-            const savedStorageWord = JSON.parse(localStorage.getItem('history'))
             getHistory.unshift(text);
             const set = JSON.stringify(getHistory)
             localStorage.setItem('history', set)
-        if(getHistory.includes(text)) {
-            const notSame = getHistory.filter(item => item !== text)
-            notSame.unshift(text)
-            notSame.splice(5, notSame.length)
-            setHistoryArr(notSame)
-            localStorage.setItem('history', JSON.stringify(notSame))
-            }
+            if(getHistory.includes(text)) {
+                const notSame = getHistory.filter(item => item !== text)
+                notSame.unshift(text)
+                notSame.splice(5, notSame.length)
+                setHistoryArr(notSame)
+                localStorage.setItem('history', JSON.stringify(notSame))
+                }
         }
 
         else if(e.key === "ArrowDown") {
