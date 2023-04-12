@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useEffect, useState} from 'react';
 import styled from "styled-components";
 import SearchApi from '../../api/searchApi';
@@ -26,7 +25,6 @@ function Search() {
         setText(e.target.value)
     }
     
-    // 관심사 분리 필요
     useEffect(()=>{
         if (!text) return
         const getData = async () => {
@@ -39,11 +37,9 @@ function Search() {
         getData()
     }, [debounceValue])
 
-
     useEffect(()=> {
         if (!text) return setSearchedWords(null)
     }, [text])
-
 
     useEffect(()=> {
         if (!text) return setExactWord(null);
@@ -81,7 +77,7 @@ function Search() {
                 notSame.splice(5, notSame.length)
                 setHistoryArr(notSame)
                 localStorage.setItem('history', JSON.stringify(notSame))
-                }
+            }
         }
 
         else if(e.key === "ArrowDown") {
