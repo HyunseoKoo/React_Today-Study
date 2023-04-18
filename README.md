@@ -33,3 +33,23 @@ MSW (Mocking Service Worker) 개념 공부.
 MSW: 백엔드가 없어도 프론트 내에서 http 요청을 통한 데이터 교환을 할수 있게 한다.
 개발/테스트의 효율성을 높이고 코드의 안정성과 견고성을 높이기 위해 사용한다.
 mocking api로 백엔드 통신하는 앱 구현해볼 예정 (todoList 형태)
+##
+[23.04.18]
+MSW 공식문서 정독.
+1. msw의 장점
+ 1) 서비스 로직을 직접 수정할 필요가 없다.
+ 2) 네이티브 라이브러를 바꿔치기 하지 않아도 된다.
+ 3) 직접 mocking server를 구현할 필요가 없다.
+ 4) application level이 아닌, network level에서 요청을 가로채 응답을 보내기 때문에 모든 종류의 네트워크 라이브러리(axios, react-query등) 및 네이티브 fetch 메서드와 함께 사용할 수 있다.
+2. service worker란?
+ 웹 응용 프로그램, 브라우저, 그리고 (사용 가능한 경우) 네트워크 사이의 프록시 서버 역할을 함.
+ 여러 역할이 있지만, '네트워크 요청을 가로채서 네트워크 사용 가능 여부에 따라 적절한 행동을 취하고 서버의 자산을 업데이트'.
+ browser가 background에서 실행하는 script로, application의 ui 블록없이 연산을 처리 가능.
+ (참고로, service worker는 브라우저 한경에서만 실행 가능)
+3. msw 작동 방식
+ 1) msw 라이브러리를 설치하면 브라우저에 service worker를 등록
+ 2) 브라우저에서 이루어지는 실제 네트워크 요청들을 (ex. fetch 이벤트로 보낸 네트워크 요청 등) service worker가 가로챔
+ 3) service worker는 가로챈 요청을 복사해 실제 서버가 아닌 [client side에 있는 msw 라이브러리]로 보낸 다음, 등록된 handler를 통해 mocked response(모의 응답)을 제공 받음
+ 4) 마지막으로, 제공받은 mocked response를 브라우저에게 그대로 전달
+이러한 과정을 통해, 실제 서버와 직접적인 연결없이도 보내는 요청에 대한 응답을 mocking 할 수 있게 됨
+따라서, 백엔드 api가 준비되기 전에도 msw로 가상 api를 등록하고 프론트에서 테스트가 가능한 것!
