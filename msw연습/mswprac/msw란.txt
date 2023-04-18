@@ -1,0 +1,82 @@
+참고 페이지: https://velog.io/@khy226/msw로-모의-서버-만들기
+
+MSW(Mock Server Worker)
+
+1. mocking 사용이유?
+    - 백엔드 api가 완성되기 전까지 기다리는 것은 프론트엔드 작업 일정 관리 측면에서 비효율적. 백엔드 api 개발 일정에 의존적이게 되어 정해진 기간 막바지에 작업할 수 있게 되고,
+      그만큼 테스트 및 디버깅하는 시간이 짧아지기 때문.
+    => 백엔드 api가 완성되기 전에 Mocking API를 만들어 프론트엔드 작업을 할 수 있게 해주는 것이 바로 "msw"
+
+
+2. 일반적인 mocking 방식
+    1) application 내부 로직에 직접 mocking
+        화면에 필요한 데이터 상태별로 application에 직접 mocking 로직을 구현하는 것
+        장점: 구현이 쉽다 / 단점: 서비스 로직을 수정해야하고 http 메서드 및 응답 상태에 따른 대응이 쉽지 않다
+
+    2) native module(http, https, XMLHttpRequest) 바꿔치기
+        네이티브 모듈을 바꿔치기해서 원하는 응답을 받을 수 있게 mocking하는 것
+        단점: 실제 환경과 차이가 있어 end-to-end 테스트에 좋지 않다
+
+    3) mocking server 만들기
+        장점: 실제 서비스 로직을 수정하지 않아도 된다 / 단점: 구현한는데 시간이 꽤 들고, 실제 서버와 비슷하지만 다른 방식으로 동작하기 때문에 기존 코드를 수정해야 한다
+
+    => 위의 3가지 방식들의 문제점을 msw로 해결할 수 있음!
+
+3. msw의 장점
+    1) 서비스 로직을 직접 수정할 필요가 없다.
+    2) 네이티브 라이브러를 바꿔치기 하지 않아도 된다.
+    3) 직접 mocking server를 구현할 필요가 없다.
+    4) application level이 아닌, network level에서 요청을 가로채 응답을 보내기 때문에 모든 종류의 네트워크 라이브러리(axios, react-query등) 및 네이티브 fetch 메서드와 함께 사용할 수 있다.
+
+
+4. msw란?
+    service worker를 이용해 서버를 향한 실제 네트워크 요청을 가로채서(intercept) 모의 응답(Mocked response)를 보내주는 API Mocking 라이브러리
+    직접 mock server를 구현하지 않아도 네트워크 수준에서 api를 mocking 가능
+    mocking 테스트를 위한 node 환경, 개발 및 디버깅을 위한 브라우저 환경에서 모두 사용할 수 있다는 장점
+    소스 코드 수정 없이 mocking이 필요한 환경에서만 msw 인스턴스를 실행해 api mocking 적용 가능
+
+    => 이런 기능을 제공할 수 있는 이유? "service worker"를 이용해 http 요청을 가로채기 때문!
+
+5. service worker란?
+    웹 응용 프로그램, 브라우저, 그리고 (사용 가능한 경우) 네트워크 사이의 프록시 서버 역할을 함.
+    여러 역할이 있지만, '네트워크 요청을 가로채서 네트워크 사용 가능 여부에 따라 적절한 행동을 취하고 서버의 자산을 업데이트'.
+    browser가 background에서 실행하는 script로, application의 ui 블록없이 연산을 처리 가능.
+    (참고로, service worker는 브라우저 ㅗ한경에서만 실행 가능)
+
+6. msw 작동 방식
+    1) msw 라이브러리를 설치하면 브라우저에 service worker를 등록
+    2) 브라우저에서 이루어지는 실제 네트워크 요청들을 (ex. fetch 이벤트로 보낸 네트워크 요청 등) service worker가 가로챔
+    3) service worker는 가로챈 요청을 복사해 실제 서버가 아닌 [client side에 있는 msw 라이브러리]로 보낸 다음, 등록된 handler를 통해 mocked response(모의 응답)을 제공 받음
+    4) 마지막으로, 제공받은 mocked response를 브라우저에게 그대로 전달
+
+    이러한 과정을 통해, 실제 서버와 직접적인 연결없이도 보내는 요청에 대한 응답을 mocking 할 수 있게 됨
+    따라서, 백엔드 api가 준비되기 전에도 msw로 가상 api를 등록하고 프론트에서 테스트가 가능한 것!
+
+7. msw 예시
+    mocks.js 파일 참고
+    핸들러 함수(res.post()) => 첫번째 인자: 경로 / 두번째 인자: response resolver라는 콜백함수
+
+    response resolver에는 세 가지 인자를 받음
+    req: 매칭되는 요청에 대한 정보
+    res: 모의 응답을 만들 수 있는 유틸리티
+    ctx: 모의 응답의 http 상태 코드, 헤더, 바디 등을 만들 수 있는 함수들
+
+8. msw 라이브러리 설치
+    npm install msw --save-dev
+
+9. 브라우저에 서비스 워커 등록
+    브라우저에서 사용하기 하려면 msw를 서비스 워커에 등록하는 과정 필요, 서비스 워커 등록 위한 파일을 public 폴더에 추가
+    npx msw init public / --save
+
+10. worker 설정
+    src/mocks/browser.js 파일 생성하여 worker 인스턴스를 생성하고, 요청 핸들러 정의
+
+
+11. worker 적용 확인
+    애플리케이션을 다시 시작, 브라우저 콘솔에서 아래와 같은 메세지 확인되면 mocking 활성화된 것
+    [MSW] Mocking enabled.
+
+    이제 개발 서버에서 앱을 실행하면, 실제 서버가 아닌 msw에서 응답을 보낼 수 있게 됨
+
+
+12. 요청 handler 작성
