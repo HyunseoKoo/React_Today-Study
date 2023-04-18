@@ -41,11 +41,13 @@ MSW 라이브러리 공부
  * 네이티브 라이브러를 바꿔치기 하지 않아도 된다.
  * 직접 mocking server를 구현할 필요가 없다.
  * application level이 아닌, network level에서 요청을 가로채 응답을 보내기 때문에 모든 종류의 네트워크 라이브러리(axios, react-query등) 및 네이티브 fetch 메서드와 함께 사용할 수 있다.
+
 2. service worker란?
  웹 응용 프로그램, 브라우저, 그리고 (사용 가능한 경우) 네트워크 사이의 프록시 서버 역할을 함.
  여러 역할이 있지만, '네트워크 요청을 가로채서 네트워크 사용 가능 여부에 따라 적절한 행동을 취하고 서버의 자산을 업데이트'.
  browser가 background에서 실행하는 script로, application의 ui 블록없이 연산을 처리 가능.
  (참고로, service worker는 브라우저 한경에서만 실행 가능)
+
 3. msw 작동 방식
  * msw 라이브러리를 설치하면 브라우저에 service worker를 등록
  * 브라우저에서 이루어지는 실제 네트워크 요청들을 (ex. fetch 이벤트로 보낸 네트워크 요청 등) service worker가 가로챔
