@@ -36,7 +36,7 @@ mocking api로 백엔드 통신하는 앱 구현해볼 예정 (todoList 형태)
 ##
 [23.04.18]
 MSW 공식문서 정독.
-1. msw의 장점
+1. msw의 장점:
  서비스 로직을 직접 수정할 필요가 없다.
  네이티브 라이브러를 바꿔치기 하지 않아도 된다.
  직접 mocking server를 구현할 필요가 없다.
@@ -47,9 +47,9 @@ MSW 공식문서 정독.
  browser가 background에서 실행하는 script로, application의 ui 블록없이 연산을 처리 가능.
  (참고로, service worker는 브라우저 한경에서만 실행 가능)
 3. msw 작동 방식
- 1) msw 라이브러리를 설치하면 브라우저에 service worker를 등록
- 2) 브라우저에서 이루어지는 실제 네트워크 요청들을 (ex. fetch 이벤트로 보낸 네트워크 요청 등) service worker가 가로챔
- 3) service worker는 가로챈 요청을 복사해 실제 서버가 아닌 [client side에 있는 msw 라이브러리]로 보낸 다음, 등록된 handler를 통해 mocked response(모의 응답)을 제공 받음
- 4) 마지막으로, 제공받은 mocked response를 브라우저에게 그대로 전달
+ * msw 라이브러리를 설치하면 브라우저에 service worker를 등록
+ * 브라우저에서 이루어지는 실제 네트워크 요청들을 (ex. fetch 이벤트로 보낸 네트워크 요청 등) service worker가 가로챔
+ * service worker는 가로챈 요청을 복사해 실제 서버가 아닌 [client side에 있는 msw 라이브러리]로 보낸 다음, 등록된 handler를 통해 mocked response(모의 응답)을 제공 받음
+ * 마지막으로, 제공받은 mocked response를 브라우저에게 그대로 전달
 이러한 과정을 통해, 실제 서버와 직접적인 연결없이도 보내는 요청에 대한 응답을 mocking 할 수 있게 됨
 따라서, 백엔드 api가 준비되기 전에도 msw로 가상 api를 등록하고 프론트에서 테스트가 가능한 것!
