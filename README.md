@@ -55,3 +55,9 @@ MSW 라이브러리 공부
  * 마지막으로, 제공받은 mocked response를 브라우저에게 그대로 전달
 이러한 과정을 통해, 실제 서버와 직접적인 연결없이도 보내는 요청에 대한 응답을 mocking 할 수 있게 됨
 따라서, 백엔드 api가 준비되기 전에도 msw로 가상 api를 등록하고 프론트에서 테스트가 가능한 것!
+##
+[23.04.19]
+최종 프로젝프(팀프로젝트) 기획
+피그마를 활용하여 페이지별 와이어프레임 제작
+피그마 url : https://www.figma.com/file/q7b02izl7kucudDRoXtmav/Untitled?node-id=1-2&t=V0uUShtMukISuWbw-0
+api의 input/output 고려하여 ui/ux 기획함.
