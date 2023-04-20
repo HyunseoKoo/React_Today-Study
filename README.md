@@ -57,7 +57,12 @@ MSW 라이브러리 공부
 따라서, 백엔드 api가 준비되기 전에도 msw로 가상 api를 등록하고 프론트에서 테스트가 가능한 것!
 ##
 [23.04.19]
-최종 프로젝프(팀프로젝트) 기획
+최종 프로젝프(중고물품 커머) 기획
 피그마를 활용하여 페이지별 와이어프레임 제작
 피그마 url : https://www.figma.com/file/q7b02izl7kucudDRoXtmav/Untitled?node-id=1-2&t=V0uUShtMukISuWbw-0
 api의 input/output 고려하여 ui/ux 기획함.
+##
+[23.04.20]
+최종 프로젝프(중고물품 커머) 기획2
+페이지별 와이어프레임 완성 & 서비스 정책 설계 & 모바일 ui/ux 와이어프레임 기획
+피그마 url : https://www.figma.com/file/q7b02izl7kucudDRoXtmav/Untitled?node-id=1-2&t=V0uUShtMukISuWbw-0
