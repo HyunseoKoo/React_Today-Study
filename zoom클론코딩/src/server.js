@@ -1,3 +1,5 @@
+import http from "http";
+import WebSocket from 'ws';
 import express from "express";
 
 const app = express();
@@ -9,7 +11,24 @@ app.get("/", (req, res) => res.render("home"));                 // home.pug를 r
 app.get("/*", (req, res) => res.redirect("/"));
 
 const handleListen = () => console.log('Listening on http://localhost:3000');
-app.listen(3000, handleListen);
+// app.listen(3000, handleListen);
+
+// 이렇게 하면 같은 서버에서 http서버와 webSocket 서버 둘 다 돌릴 수 있음 (현재 2개가 같은 3000번 port에 있기를 유도해서 그렇지 이게 필수는 아님. ws서버만 만들어도 됨)
+const server = http.createServer(app);              // http서버에 access 하려는 것  (http 서버가 필요한 이유는 views, static files, home, redirection을 원하기 때문!)
+const wss = new WebSocket.Server({ server });       // http서버 위에 webSocket 서버를 만든 것
+
+// 백엔드에 연결된 사람의 정보를 제공해줌 (그게 여기 socket에서 제공되는 것 => socket은 서버(나)와 브라우저 사이의 연결)
+// 여기있는 socket이 frontend와 실시간으로 소통할 수 있음
+wss.on("connection", (socket) => {
+    console.log("Connected to Browser ✔");
+    socket.on("close", () => console.log("Disconnected from the Browser 🖐️"));
+    socket.on("message", (message) => {
+        console.log(message);
+    });
+    socket.send("hello!!");
+})
+
+server.listen(3000, handleListen);
 
 /*
     express로 할 일 ? view를 설정해주고 render 해주는 것!
