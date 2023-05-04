@@ -66,3 +66,8 @@ api의 input/output 고려하여 ui/ux 기획함.
 최종 프로젝프(중고물품 커머) 기획2
 페이지별 와이어프레임 완성 & 서비스 정책 설계 & 모바일 ui/ux 와이어프레임 기획
 피그마 url : https://www.figma.com/file/q7b02izl7kucudDRoXtmav/Untitled?node-id=1-2&t=V0uUShtMukISuWbw-0
+##
+[23.05.04]
+프로토콜 - http vs. webSocket
+1. http : 서버는 브라우저의 요청에 대한 응답만 할뿐, user가 누구인지 잊어버림. [stateless, 실시간 x]
+2. webSocket : 악수와 같이, 서버와 브라우저간 양방향 소통가능. 서버는 브라우저 요청 없이도 응답 가능. [bi-directional connection, 실시간 o]
