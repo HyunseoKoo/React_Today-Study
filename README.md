@@ -71,3 +71,14 @@ api의 input/output 고려하여 ui/ux 기획함.
 프로토콜 - http vs. webSocket
 1. http : 서버는 브라우저의 요청에 대한 응답만 할뿐, user가 누구인지 잊어버림. [stateless, 실시간 x]
 2. webSocket : 악수와 같이, 서버와 브라우저간 양방향 소통가능. 서버는 브라우저 요청 없이도 응답 가능. [bi-directional connection, 실시간 o]
+##
+[23.05.06]
+로그인 로직 복습
+1. front --ID/PW--> back
+2. front <--암호값-- back
+3. front --암호[로그인 정보]--> back
+* 로그인 시 프론트엔드에서 해야할 일
+1) 사용자가 입력한 로그인 정보를 가지고 로그인 유무 판단
+2) 로그인 유무를 통해 접근권한 설정
+3) 백엔드로부터 받은 암호를 바탕으로 백엔드에게 로그인 정보 전달시 암호화하여 공유
+* access_token => 백엔드에 axios 요청할 때마다 정보를 암호화여 전달
