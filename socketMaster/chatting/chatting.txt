@@ -1,0 +1,14 @@
+1. 터미널에서 npm init -y => package.json 파일 생성
+2. npm install express socket.io => socket.io 라이브러리
+   npm i moment => 시간을 알려주는 라이브러리
+3. app.js 파일 생성 후 express 라이브러리를 app이라는 변수에 담아둠
+4. src > index.html 파일 생성
+5. app.js에서 express 서버가 실행이 되면 보여줄 파일(폴더?)들을 지정해줌
+6. npm install (-g) nodemon => app.js에서 새로운 명령어 추가시 node app.js를 번거롭게 설정해줘야하기 때문에 자동으로 변화를 감지하여 실행해주는 nodemon 라이브러리 설치
+   이후에는 터미널에서 서버 작동시킬때 nodemon app.js 
+7. socket io를 받기 위해서 서버쪽에서 설정 => 웹소켓으로 http 사용
+8. socket io를 변수에 담아줌
+9. 소켓io가 server를 담을수 있게(???) 세팅
+10. "connection"이 작동되면 명령이 실행되도록 io 설정
+11. html 파일에서 socket io가 연결되는지 확인  =>  <script src="http://localhost:5000/socket.io/socket.io.js"></script> 기재 후 브라우저에서 확인
+12. src > js > chat.js 파일 생성 후 socket io 부르기
