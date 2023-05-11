@@ -71,6 +71,11 @@ api의 input/output 고려하여 ui/ux 기획함.
 프로토콜 - http vs. webSocket
 1. http : 서버는 브라우저의 요청에 대한 응답만 할뿐, user가 누구인지 잊어버림. [stateless, 실시간 x]
 2. webSocket : 악수와 같이, 서버와 브라우저간 양방향 소통가능. 서버는 브라우저 요청 없이도 응답 가능. [bi-directional connection, 실시간 o]
+ws 대신 socket.io 라이브러리 쓰면
+- 연결 끊기면 자동재접속 기능
+- 웹소켓 접속자마다 자동 id 부여
+- 모든 웹소켓유저에게 전체 메세지 전송가능
+- 웹소켓방을 생성가능
 ##
 [23.05.06]
 로그인 로직 복습
