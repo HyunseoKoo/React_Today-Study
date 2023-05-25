@@ -89,4 +89,5 @@ ws 대신 socket.io 라이브러리 쓰면
 * access_token => 백엔드에 axios 요청할 때마다 정보를 암호화여 전달
 ##
 [23.05.25]
-반응형 -> 그리드 & @media query 공부
+프로젝트 반응형 적용 -> 그리드 & @media query
+https://github.com/Frontend-TEAM1/ZoopzoopMarket/tree/feature/accountBook
